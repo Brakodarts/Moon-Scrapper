@@ -1,66 +1,100 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using MoonScrapper.Data;
 using MoonScrapper.Models;
 using MoonScrapper.Services;
 using MoonScrapper.UI;
 using Spectre.Console;
+using Spectre.Console.Rendering;
 
-namespace MoonScrapper
+namespace MoonScrapper;
+
+public class Game
 {
-    public class Game
+    public static void Main()
     {
-        public static void Main()
-        {
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
-            Console.CursorVisible = false;
-            bool showBuildings = false;
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        Console.CursorVisible = false;
 
-            // Initialize the DataManager for SQLite operations
-            var dataManager = new DataManager("moonscraper_save.db");
+        // Initialize the DataManager for SQLite operations
+        var dataManager = new DataManager("moonscraper_save.db");
+        var mapService = new MapService();
 
-            while (true)
+        //counter to control the ticks
+        int tickCounter = 0;
+
+        AnsiConsole.Live(new Markup("Initializing..."))
+            .Start(ctx =>
             {
-                AnsiConsole.Clear();
-
-                GameUI.DrawHeader();
-                GameUI.DrawResourceBar();
-
-                if (Console.KeyAvailable)
+                while (true)
                 {
-                    var key = Console.ReadKey(true).Key;
-                    if (key == ConsoleKey.B)
+                    // 1. UPDATE LOGIC
+                    tickCounter++;
+                    if (tickCounter >= 100)
                     {
-                        showBuildings = !showBuildings;
+                        GameEngine.ProcessTick();
+                        tickCounter = 0;
                     }
-                    else if (key == ConsoleKey.S)
+
+                    // 2. RENDER UI
+                    var header = GameUI.GetHeader();
+                    var resourceBar = GameUI.GetResourceBar();
+                    var tile = mapService.GetTile(mapService.CursorX, mapService.CursorY);
+                    var infoPanel = GameUI.GetTileInfo(tile);
+                    var mapTable = GameUI.GetMap(mapService);
+                    var buildingsTable = GameUI.GetBuildingsTable();
+
+                    // Create a list to hold all your UI pieces
+                    var components = new List<IRenderable>
                     {
-                        // Create a new save snapshot
-                        var save = new GameSave
+                        header,
+                        resourceBar,
+                        new Columns(buildingsTable, mapTable, infoPanel)
+                    };
+
+                    // Add control hints at the bottom
+                    components.Add(new Markup("\n[gray]Press [[S]] to Save and Exit[/]"));
+
+                    // Create the final layout container from the list
+                    var root = new Rows(components);
+
+                    // Update the live display
+                    ctx.UpdateTarget(root);
+
+                    // 3. HANDLE INPUT
+                    if (Console.KeyAvailable)
+                    {
+                        var key = Console.ReadKey(true).Key;
+                        if (key == ConsoleKey.UpArrow) mapService.MoveCursor(0, -1);
+                        if (key == ConsoleKey.DownArrow) mapService.MoveCursor(0, 1);
+                        if (key == ConsoleKey.LeftArrow) mapService.MoveCursor(-1, 0);
+                        if (key == ConsoleKey.RightArrow) mapService.MoveCursor(1, 0);
+
+                        if (key == ConsoleKey.S)
                         {
-                            Fuel = Fuel.Amount,
-                            Oxigen = Oxigen.Amount,
-                            SaveTime = DateTime.Now
-                        };
+                            // Create a new save snapshot
+                            var save = new GameSave
+                            {
+                                Fuel = Fuel.Amount,
+                                Oxigen = Oxigen.Amount,
+                                SaveTime = DateTime.Now
+                            };
 
-                        // Save to the database
-                        dataManager.SaveGame(save);
+                            // Save to the database
+                            dataManager.SaveGame(save);
 
-                        // Clear screen and exit loop
-                        AnsiConsole.Clear();
-                        AnsiConsole.MarkupLine("\n[bold green]💾 Game Saved Successfully![/]\n[gray]Goodbye![/]\n");
-                        break;
+                            // Exit the live display and main loop
+                            break;
+                        }
                     }
+
+                    Thread.Sleep(10);
                 }
+            });
 
-                GameUI.DrawBuildingsTable(showBuildings);
-
-                // 5. Leave the ticking run on the background
-                GameEngine.ProcessTick();
-
-                // 1 Sekunde warten
-                Thread.Sleep(1000);
-            }
-        }
+        // Final exit message after Live display ends
+        AnsiConsole.Clear();
+        AnsiConsole.MarkupLine("\n[bold green]💾 Game Saved Successfully![/]\n[gray]Goodbye![/]\n");
     }
 }

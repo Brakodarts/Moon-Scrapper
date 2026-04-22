@@ -1,18 +1,16 @@
 using SQLite;
-using System;
 
-namespace MoonScrapper.Models
-{  
-    [Table("GameSaves")]
-    public class GameSave
-    {
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
+namespace MoonScrapper.Models;
 
-        public int Fuel { get; set; }
-        public int Oxigen { get; set; }
+[Table("GameSaves")]
+public class GameSave
+{
+    [PrimaryKey, AutoIncrement]
+    public int Id { get; set; }
 
-        public DateTime SaveTime { get; set; }
-        
-    }
+    public int Fuel { get; set; }
+    public int Oxigen { get; set; }
+
+    public DateTime SaveTime { get; set; }
+
 }

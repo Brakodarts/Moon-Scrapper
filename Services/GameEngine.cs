@@ -12,7 +12,7 @@ namespace MoonScrapper.Services
             {
                 Oxigen.Amount += Oxigen.ProductionRate - Oxigen.DrainRate;
                 Fuel.Amount += Fuel.ProductionRate - Fuel.DrainRate;
-                Steel.Amount += Steel.ProductionRate - Steel.DrainRate;
+                Iron.Amount += Iron.ProductionRate - Iron.DrainRate;
                 Crew.Amount += Crew.ProductionRate - Crew.DrainRate;
                 Food.Amount += Food.ProductionRate - Food.DrainRate;
                 Power.Amount += Power.ProductionRate - Power.DrainRate;
