@@ -1,4 +1,4 @@
-# 🏰 InnoBuilder - Console Economy Engine
+# MoonScrapper
 
 A modular resource-management game engine built in C# and .NET, inspired by city-building and survival games .
 
