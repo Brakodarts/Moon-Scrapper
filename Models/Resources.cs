@@ -48,3 +48,10 @@ public class Power
     public static int DrainRate { get; set; } = 0;
 
 }
+
+public class Ice
+{
+    public static int Amount { get; set; } = 1000;
+    public static int ProductionRate { get; set; } = 0;
+    public static int DrainRate { get; set; } = 0;
+}

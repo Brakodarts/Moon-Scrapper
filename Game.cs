@@ -54,7 +54,7 @@ public class Game
                     };
 
                     // Add control hints at the bottom
-                    components.Add(new Markup("\n[gray]Press [[S]] to Save and Exit[/]"));
+                    components.Add(new Markup("\n[gray]Press [[P]] to Save and Exit[/] | [[Arrows]] to move | [[E]] to build[/]"));
 
                     // Create the final layout container from the list
                     var root = new Rows(components);
@@ -66,12 +66,12 @@ public class Game
                     if (Console.KeyAvailable)
                     {
                         var key = Console.ReadKey(true).Key;
-                        if (key == ConsoleKey.UpArrow) mapService.MoveCursor(0, -1);
-                        if (key == ConsoleKey.DownArrow) mapService.MoveCursor(0, 1);
-                        if (key == ConsoleKey.LeftArrow) mapService.MoveCursor(-1, 0);
-                        if (key == ConsoleKey.RightArrow) mapService.MoveCursor(1, 0);
+                        if (key == ConsoleKey.W) mapService.MoveCursor(0, -1);
+                        if (key == ConsoleKey.S) mapService.MoveCursor(0, 1);
+                        if (key == ConsoleKey.A) mapService.MoveCursor(-1, 0);
+                        if (key == ConsoleKey.D) mapService.MoveCursor(1, 0);
 
-                        if (key == ConsoleKey.S)
+                        if (key == ConsoleKey.P)
                         {
                             // Create a new save snapshot
                             var save = new GameSave
@@ -86,6 +86,20 @@ public class Game
 
                             // Exit the live display and main loop
                             break;
+                        }
+
+                        if (key == ConsoleKey.E)
+                        {
+                            // Build a new building
+                            var tile = mapService.GetTile(mapService.CursorX, mapService.CursorY);
+                            if (tile.Building == null)
+                            {
+                                tile.Building = new Building
+                                {
+                                    Type = "StorageUnit",
+                                    Level = 1
+                                };
+                            }
                         }
                     }
 

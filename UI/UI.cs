@@ -40,7 +40,7 @@ namespace MoonScrapper.UI
 
         public static Markup GetResourceBar()
         {
-            string resourceBar = $"🍎 Food: {DrawBar(Food.Amount, Food.Storage)}[/]  |  💨 Oxigen: {DrawBar(Oxigen.Amount, Oxigen.Storage)}[/]  |  🔥 Fuel: [green]{Fuel.Amount}[/]  |  📦 Iron: [green]{Iron.Amount}[/]  |  👥 Crew: [green]{Crew.Amount}[/]  |  📡 Power: [green]{Power.Amount}[/]";
+            string resourceBar = $"🍎 Food: {DrawBar(Food.Amount, Food.Storage)}[/]  |  💨 Oxigen: {DrawBar(Oxigen.Amount, Oxigen.Storage)}[/]  |  🧊 Ice: [green]{Ice.Amount}[/]  |  📦 Iron: [green]{Iron.Amount}[/]  |  🔥 Fuel: [green]{Fuel.Amount}[/]   |  ";
             return new Markup(resourceBar);
         }
 
